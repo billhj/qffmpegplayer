@@ -26,6 +26,7 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *);  //鼠标双击事件
     void keyPressEvent(QKeyEvent *event);
     void closeEvent(QCloseEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 private:
     Ui::MainWindow *ui;
 

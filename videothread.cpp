@@ -584,7 +584,7 @@ bool VideoThread::setFileName(QString path){     //读取视频文件路径
 
 bool VideoThread::play(){           //播放
 
-    if(mPlayerState == Stop)
+    if(mPlayerState == Stop || mVideoState.readThreadFinished)
     {
         stop(true);
         mPlayerState = Playing;

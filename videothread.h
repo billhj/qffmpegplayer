@@ -131,6 +131,10 @@ public:
     double getCurrentTime(); //单位秒
 
     void disPlayVideo(QImage img);   //激发信号的函数
+    bool isPlaying()
+    {
+        return mPlayerState == Playing;
+    }
 
 signals:
     void sig_GetOneFrame(QImage);   //每获取到一帧图像 就发送此信号

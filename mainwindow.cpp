@@ -194,10 +194,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         close();
         break;
     case Qt::Key_1:
-        widget_ext->modifyEyeSeparation(0.1);
+        widget_ext->modifyEyeSeparation(0.01);
         break;
     case Qt::Key_2:
-        widget_ext->modifyEyeSeparation(-0.1);
+        widget_ext->modifyEyeSeparation(-0.01);
+        break;
+    case Qt::Key_Space:
+        if(mPlayer->isPlaying()) mPlayer->pause();
+        else mPlayer->play();
         break;
     default:
         break;
@@ -211,4 +215,19 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     //QApplication::quitOnLastWindowClosed();
     delete widget_ext;
     QApplication::quit();
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        if (keyEvent->key() == Qt::Key_Space)
+        {
+            if(mPlayer->isPlaying()) mPlayer->pause();
+            else mPlayer->play();
+        }
+
+    }
+    return QObject::eventFilter(obj, event);
 }
