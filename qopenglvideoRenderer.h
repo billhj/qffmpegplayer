@@ -1,12 +1,12 @@
 #ifndef QOPENGLVIDEOPLAYER_H
 #define QOPENGLVIDEOPLAYER_H
-#include "gl/glew.h"
+#include "Shader.h"
 #include <QOpenGLWidget>
 #include <QVideoFrame>
-#include "Shader.h"
 #include <QOpenGLTexture>
+#include <QOpenGLFunctions>
 
-class QOpenGLVideoRenderer : public QOpenGLWidget
+class QOpenGLVideoRenderer : public QOpenGLWidget, protected QOpenGLFunctions
 {
 public:
     QOpenGLVideoRenderer();

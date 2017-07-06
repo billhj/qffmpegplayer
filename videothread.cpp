@@ -97,6 +97,7 @@ static void packet_queue_flush(PacketQueue *q){   //清空队列，每次跳转�
 static int audio_decode_frame(VideoState *is, double *pts_ptr){     //
     int len1, len2, decoded_data_size;
     AVPacket *pkt = &is->audio_pkt;
+    //qDebug()<<pkt->pts;
     int got_frame = 0;
     int64_t dec_channel_layout;
     int wanted_nb_samples, resampled_data_size, n;
@@ -111,6 +112,7 @@ static int audio_decode_frame(VideoState *is, double *pts_ptr){     //
                 SDL_Delay(10);
                 continue;
             }
+            //if(is->quit) return -1;
 
             if (!is->audio_frame) {
                 if (!(is->audio_frame = av_frame_alloc())) {
@@ -249,12 +251,14 @@ static int audio_decode_frame(VideoState *is, double *pts_ptr){     //
         //更新视频时钟
         if (pkt->pts != AV_NOPTS_VALUE) {
             is->audio_clock = av_q2d(is->audio_st->time_base) * pkt->pts;
+            //qDebug()<<is->audio_clock;
         }
     }
     return 0;
 }
 
 static void audio_callback(void *userdata, Uint8 *stream, int len) {   //回调函数
+    //qDebug()<<"audiocallback";
     VideoState *is = (VideoState *) userdata;
     int len1, audio_data_size;
     double pts;
@@ -271,8 +275,8 @@ static void audio_callback(void *userdata, Uint8 *stream, int len) {   //回调�
                 // silence
                 is->audio_buf_size = 1024;
                 // 清零，静音
-                if (is->audio_buf == NULL) return;
-                memset(is->audio_buf, 0, is->audio_buf_size);
+                //if (is->audio_buf == NULL) return;
+                memset((void*)(is->audio_buf), 0, is->audio_buf_size);
             } else {
                 is->audio_buf_size = audio_data_size;
             }
@@ -290,6 +294,7 @@ static void audio_callback(void *userdata, Uint8 *stream, int len) {   //回调�
         len -= len1;
         stream += len1;
         is->audio_buf_index += len1;
+        //qDebug()<<"out";;
     }
 }
 
@@ -365,7 +370,8 @@ int audio_stream_component_open(VideoState *is, int stream_index){   //打开音
 
     do {
         is->audioID = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(0,0),0,&wanted_spec, &spec,0);
-        fprintf(stderr,"SDL_OpenAudio (%d channels): %s\n",wanted_spec.channels, SDL_GetError());
+        //fprintf(stderr,"SDL_OpenAudio (%d channels): %s\n",wanted_spec.channels, SDL_GetError());
+
         qDebug()<<QString("SDL_OpenAudio (%1 channels): %2").arg(wanted_spec.channels).arg(SDL_GetError());
         wanted_spec.channels = next_nb_channels[FFMIN(7, wanted_spec.channels)];
         if (!wanted_spec.channels) {
@@ -419,8 +425,10 @@ int audio_stream_component_open(VideoState *is, int stream_index){   //打开音
     return 0;
 }
 
+static int id = 0;
   //处理视频
 int video_thread(void *arg){      //视频线程，解码视频
+    //qDebug()<<id++;
     VideoState *is = (VideoState *) arg;
     AVPacket pkt1, *packet = &pkt1;
 
@@ -463,6 +471,7 @@ int video_thread(void *arg){      //视频线程，解码视频
         if (packet_queue_get(&is->videoq, packet, 0) <= 0){
             if (is->readFinished){          //队列里面没有数据了且读取完毕了
                 break;
+
             }
             else{
                 SDL_Delay(1); //队列只是暂时没有数据而已
@@ -520,7 +529,7 @@ int video_thread(void *arg){      //视频线程，解码视频
             //否则当从后面跳转到前面的时候会卡在这里
             video_pts = is->video_clock;
 
-            if (video_pts <= audio_pts) break;
+            if (video_pts <= audio_pts || is->audioID == 0) break;
 
             int delayTime = (video_pts - audio_pts) * 1000;
 
@@ -574,6 +583,16 @@ bool VideoThread::setFileName(QString path){     //读取视频文件路径
 }
 
 bool VideoThread::play(){           //播放
+
+    if(mPlayerState == Stop)
+    {
+        stop(true);
+        mPlayerState = Playing;
+        emit sig_StateChanged(Playing);
+        this->start();        //启动线程
+        return true;
+    }
+
     mVideoState.isPause = false;
 
     if (mPlayerState != Pause){
@@ -615,12 +634,15 @@ bool VideoThread::stop(bool isWait){    //停止
     }
 
     //关闭SDL音频播放设备
-    if (mVideoState.audioID != 0){
+   if (mVideoState.audioID != 0){
         SDL_LockAudio();
         SDL_PauseAudioDevice(mVideoState.audioID,1);
+        //SDL_CloseAudioDevice(mVideoState.audioID);
         SDL_UnlockAudio();
+
         mVideoState.audioID = 0;
     }
+    //SDL_CloseAudio();
     return true;
 }
 
@@ -632,7 +654,10 @@ void VideoThread::seek(int64_t pos){   //跳转
 }
 
 double VideoThread::getCurrentTime(){   //当前时间
-    return mVideoState.audio_clock;
+    if(mVideoState.audioID != 0){
+        return mVideoState.audio_clock;
+    }
+    return mVideoState.video_clock;
 }
 
 int64_t VideoThread::getTotalTime(){   //总时间
@@ -644,11 +669,13 @@ void VideoThread::disPlayVideo(QImage img){    //发送信号，将视频解析�
 }
 
 void VideoThread::run(){             //读取视频，寻找流信息，打开解码器
+    qDebug()<<"start";
     char file_path[1280] = {0};;
 
     strcpy(file_path,mFileName.toUtf8().data());
 
     memset(&mVideoState,0,sizeof(VideoState)); //为了安全起见  先将结构体的数据初始化成0了
+    mVideoState.audio_buf = new uint8_t[AVCODEC_MAX_AUDIO_FRAME_SIZE * 4];
 
     av_register_all(); //初始化FFMPEG  调用了这个才能正常使用编码器和解码器
 
@@ -662,7 +689,7 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
     AVCodec *pCodec;
     AVCodecContext *aCodecCtx;
     AVCodec *aCodec;
-    int audioStream ,videoStream, i;
+    int audioStream ,videoStream;
 
     pFormatCtx = avformat_alloc_context();
 
@@ -679,8 +706,9 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
     videoStream = -1;
     audioStream = -1;
 
+
     //循环查找视频中包含的流信息，
-    for (i = 0; i < pFormatCtx->nb_streams; i++) {
+    for (unsigned int i = 0; i < pFormatCtx->nb_streams; i++) {
         if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO){
             videoStream = i;
         }
@@ -810,7 +838,7 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
         }
 
         if (av_read_frame(pFormatCtx, packet) < 0){
-            qDebug()<<"No Packet read ";
+            //qDebug()<<"No Packet read ";
             //is->readFinished = true;   //do not finish  even no packet
 
             if (is->quit){
@@ -839,10 +867,10 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
     }
     stop();
     qDebug()<<"end";
-
+    //SDL_DetachThread(is->video_tid);
     avcodec_close(pCodecCtx);
     avformat_close_input(&pFormatCtx);
-
     is->readThreadFinished = true;
+    is->reset();
 
 }

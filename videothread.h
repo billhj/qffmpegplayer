@@ -1,4 +1,3 @@
-
 #ifndef VideoThread_H
 #define VideoThread_H
 #include <QThread>
@@ -40,10 +39,21 @@ typedef struct VideoState {
 
     VideoState()
     {
-        audio_clock = 0;
-        video_clock = 0;
+        reset();
     }
 
+    void reset()
+    {
+        audio_buf = new uint8_t[AVCODEC_MAX_AUDIO_FRAME_SIZE * 4];
+//        audio_clock = 0;
+//        video_clock = 0;
+//        isPause = false;  //暂停标志
+//        quit = false;     //停止
+//        readFinished = true; //文件读取完毕
+//        readThreadFinished = true;
+//        videoThreadFinished = true;
+//        seek_req = 0;
+    }
 
     AVFormatContext *ic;
     int videoStream, audioStream;

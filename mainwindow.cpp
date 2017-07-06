@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QDesktopWidget>
+#include <QScreen>
 
 MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),ui(new Ui::MainWindow){
     ui->setupUi(this);
@@ -19,10 +20,10 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),ui(new Ui::MainWind
 
     if(num > 0)
     {
-        //widget_ext = NULL;
-        //widget_ext = new QOpenGLVideoRenderer();
-        widget_ext = new QWidgetPlayer;
-
+        widget_ext = NULL;
+        widget_ext = new QOpenGLVideoRenderer();
+        //widget_ext = new QWidgetPlayer;
+        //this->setCentralWidget(widget_ext);
     }
 
     //=============================
@@ -102,7 +103,7 @@ void MainWindow::paintEvent(QPaintEvent *event){  //绘制
 void MainWindow::slotGetOneFrame(QImage img){
     mImage = img;
     update(); //调用update将执行 paintEvent函数
-    if(widget_ext != NULL)
+    if(widget_ext != NULL && widget_ext->isVisible())
         widget_ext->updateFrame(mImage);   //将QImage传递给另一个屏幕
 
 }
@@ -154,7 +155,16 @@ void MainWindow::slotBtnClick(){         //按钮监听事件
     }
     else if (QObject::sender() == ui->pushButton_two){    //显示另一个屏播放按钮
         if(widget_ext != NULL)
+        {
+            int num=QApplication::desktop()->numScreens();
+            if(num > 1)
+            {
+                QScreen *screen = QGuiApplication::screens()[1]; // specify which screen to use
+                widget_ext->move(screen->geometry().x(), screen->geometry().y());
+                widget_ext->showFullScreen();
+            }
             widget_ext->show();
+        }
     }
     else if (QObject::sender() == ui->pushButton_stop){   //停止播放按钮
         mPlayer->stop(true);

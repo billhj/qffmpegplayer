@@ -36,8 +36,8 @@ private:
 
     unsigned char gIndex;  //全屏or not标志
 
-    QWidgetPlayer* widget_ext;
-    //QOpenGLVideoRenderer * widget_ext;   //第二个屏幕
+    //QWidgetPlayer* widget_ext;
+    QOpenGLVideoRenderer * widget_ext;   //第二个屏幕
 
 private slots:
     void slotGetOneFrame(QImage img);    //获得图片的槽

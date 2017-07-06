@@ -75,7 +75,7 @@ void Shader::loadFromFile (const string & vertexShaderFilename, const string & f
     vertexShaderSource = readShaderSource (vertexShaderFilename, vertexShaderSize);
   if (fragmentShaderFilename != "")
     fragmentShaderSource = readShaderSource (fragmentShaderFilename, fragmentShaderSize);
-
+  printOpenGLError();
   shaderProgram = glCreateProgram ();
   if (hasVertexShader () == true) {
     compileAttach (vertexShader, GL_VERTEX_SHADER, &vertexShaderSource);

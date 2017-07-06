@@ -8,23 +8,46 @@
 #include <QOpenGLTexture>
 #include <QKeyEvent>
 #include <iostream>
+#include <QDir>
 
+#define printOpenGLError() printOglError(__FILE__, __LINE__)
 
-QOpenGLVideoRenderer::QOpenGLVideoRenderer()
+/// Returns 1 if an OpenGL error occurred, 0 otherwise.
+static int printOglError (const char * file, int line) {
+  GLenum glErr;
+  int    retCode = 0;
+  glErr = glGetError ();
+  while (glErr != GL_NO_ERROR) {
+    printf ("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
+    retCode = 1;
+    glErr = glGetError ();
+  }
+  return retCode;
+}
+
+QOpenGLVideoRenderer::QOpenGLVideoRenderer() : QOpenGLWidget()
 {
 	eye = 0;
 	installEventFilter(this);
 	setMouseTracking(true);
-    glewInit();
+
 }
 
 
 void QOpenGLVideoRenderer::initializeGL()
 {
-
+    QString path = QDir::currentPath();
+    glewInit();
+    char *myargv [1];
+    int myargc=1;
+    myargv [0]=strdup ("Myappname");
+    glutInit(&myargc, myargv);
+    printOpenGLError();
+    initializeOpenGLFunctions();
     glClearColor(1.0, 1.0, 0, 1.0);
     shader = new Shader();
-    shader->loadFromFile("C:\\Users\\huang\\Documents\\build-VRPlayer-Desktop_Qt_5_6_2_MSVC2013_64bit-Debug\\debug\\Shader.vert","C:\\Users\\huang\\Documents\\build-VRPlayer-Desktop_Qt_5_6_2_MSVC2013_64bit-Debug\\debug\\Shader.frag");
+    std::string currentpath = path.toStdString();
+    shader->loadFromFile(currentpath+"/Shader.vert",currentpath+"/Shader.frag");
 	tx = new QOpenGLTexture(QOpenGLTexture::Target2D);
 	
 }
@@ -32,7 +55,7 @@ void QOpenGLVideoRenderer::initializeGL()
 void QOpenGLVideoRenderer::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-	shader->bind();
+    shader->bind();
 	GLint location1 = shader->getUniLocation("eyeseparation");
 	glUniform1f(location1, eye);
 
@@ -68,7 +91,7 @@ void QOpenGLVideoRenderer::paintGL()
     glEnd();
 
     glPopMatrix();
-	shader->unbind();
+    shader->unbind();
 
 }
 
