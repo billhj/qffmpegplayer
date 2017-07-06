@@ -56,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),ui(new Ui::MainWind
 
 MainWindow::~MainWindow(){
     delete ui;
-    QApplication::quit();
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *mouseEvent){
@@ -205,4 +204,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
 
     event->accept();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    //widget_ext->setVisible(false);
+    //QApplication::quitOnLastWindowClosed();
+    delete widget_ext;
+    QApplication::quit();
 }

@@ -25,6 +25,7 @@ protected:
     void paintEvent(QPaintEvent *event);    //绘制图片函数
     void mouseDoubleClickEvent(QMouseEvent *);  //鼠标双击事件
     void keyPressEvent(QKeyEvent *event);
+    void closeEvent(QCloseEvent *event);
 private:
     Ui::MainWindow *ui;
 

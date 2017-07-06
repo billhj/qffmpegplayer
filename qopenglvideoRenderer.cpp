@@ -25,14 +25,22 @@ static int printOglError (const char * file, int line) {
   return retCode;
 }
 
-QOpenGLVideoRenderer::QOpenGLVideoRenderer() : QOpenGLWidget()
+QOpenGLVideoRenderer::QOpenGLVideoRenderer(QWidget* parent) : QOpenGLWidget(parent)
 {
 	eye = 0;
 	installEventFilter(this);
 	setMouseTracking(true);
-
+    shader = NULL;
+    tx = NULL;
 }
 
+QOpenGLVideoRenderer::~QOpenGLVideoRenderer()
+{
+    if(shader!=NULL)
+        delete shader;
+    if(tx!=NULL)
+        delete tx;
+}
 
 void QOpenGLVideoRenderer::initializeGL()
 {

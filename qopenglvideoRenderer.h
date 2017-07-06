@@ -9,7 +9,8 @@
 class QOpenGLVideoRenderer : public QOpenGLWidget, protected QOpenGLFunctions
 {
 public:
-    QOpenGLVideoRenderer();
+    QOpenGLVideoRenderer(QWidget* parent = NULL);
+    ~QOpenGLVideoRenderer();
 
     void initializeGL();
     void paintGL();
