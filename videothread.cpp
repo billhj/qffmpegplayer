@@ -435,6 +435,7 @@ int video_thread(void *arg){      //视频线程，解码视频
     int ret, got_picture, numBytes;
 
     double video_pts = 0; //当前视频的pts
+    double last_video_pts = 0;
     double audio_pts = 0; //音频pts
 
     //解码视频相关
@@ -522,14 +523,22 @@ int video_thread(void *arg){      //视频线程，解码视频
             if (is->quit){
                 break;
             }
-
+            last_video_pts = audio_pts;
             audio_pts = is->audio_clock;
 
             //跳转的时候把video_clock设置成0了因此需要更新video_pts
             //否则当从后面跳转到前面的时候会卡在这里
             video_pts = is->video_clock;
 
-            if (video_pts <= audio_pts || is->audioID == 0) break;
+            if (video_pts <= audio_pts) break;
+            //if no audio setup the video delay
+            if(is->audioID == 0)
+            {
+                int delayTime = (video_pts - last_video_pts)*1000;
+                delayTime = delayTime > 5 ? 5:delayTime;
+                SDL_Delay(delayTime);
+                break;
+            }
 
             int delayTime = (video_pts - audio_pts) * 1000;
 
@@ -720,12 +729,12 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
     //如果videoStream为-1 说明没有找到视频流
     if (videoStream == -1) {
         printf("Didn't find a video stream.\n");
-        return;
+        //return;
     }
 
     if (audioStream == -1) {
         printf("Didn't find a audio stream.\n");
-        return;
+        //return;
     }
 
     is->ic = pFormatCtx;
@@ -740,19 +749,23 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
     }
 
     //查找音频解码器
-    aCodecCtx = pFormatCtx->streams[audioStream]->codec;
-    aCodec = avcodec_find_decoder(aCodecCtx->codec_id);
+    if(audioStream > 0)
+    {
+        aCodecCtx = pFormatCtx->streams[audioStream]->codec;
+        aCodec = avcodec_find_decoder(aCodecCtx->codec_id);
+        if (aCodec == NULL) {
+            printf("ACodec not found.\n");
+            return;
+        }
+        //打开音频解码器
+        if (avcodec_open2(aCodecCtx, aCodec, NULL) < 0) {
+            printf("Could not open audio codec.\n");
+            return;
+        }
+        is->audio_st = pFormatCtx->streams[audioStream];
+    }
 
-    if (aCodec == NULL) {
-        printf("ACodec not found.\n");
-        return;
-    }
-    //打开音频解码器
-    if (avcodec_open2(aCodecCtx, aCodec, NULL) < 0) {
-        printf("Could not open audio codec.\n");
-        return;
-    }
-    is->audio_st = pFormatCtx->streams[audioStream];
+
     //查找视频解码器
     pCodecCtx = pFormatCtx->streams[videoStream]->codec;
     pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
@@ -777,6 +790,8 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
 
     av_dump_format(pFormatCtx, 0, file_path, 0); //输出视频信息
 
+    //qDebug()<<av_q2d(is->video_st->codec->time_base);
+    //qDebug()<<av_q2d(is->audio_st->codec->time_base);
     while (1){
         if (is->quit){
             //停止播放
