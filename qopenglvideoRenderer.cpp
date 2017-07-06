@@ -97,6 +97,8 @@ void QOpenGLVideoRenderer::paintGL()
 
 void QOpenGLVideoRenderer::updateFrame(const QImage& img)
 {
+    tx->destroy();
+    tx->create();
 	tx->setData(img, QOpenGLTexture::DontGenerateMipMaps);
 	update();
 }
@@ -104,6 +106,11 @@ void QOpenGLVideoRenderer::updateFrame(const QImage& img)
 void QOpenGLVideoRenderer::setEyeSeparation(float v)
 {
 	eye = v;
+}
+
+void QOpenGLVideoRenderer::modifyEyeSeparation(float diff)
+{
+    eye += diff;
 }
 
 void QOpenGLVideoRenderer::resizeGL(int w, int h)

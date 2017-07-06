@@ -16,6 +16,7 @@ public:
     void resizeGL(int w, int h);
     void updateFrame(const QImage& img);
 	void setEyeSeparation(float v);
+    void modifyEyeSeparation(float diff);
 protected:
 	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);

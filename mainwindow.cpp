@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),ui(new Ui::MainWind
 
 MainWindow::~MainWindow(){
     delete ui;
+    QApplication::quit();
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *mouseEvent){
@@ -183,4 +184,25 @@ void MainWindow::slotBtnClick(){         //按钮监听事件
 
 void MainWindow::slotStateChanged(VideoThread::PlayerState mPlayState){   //播放状态改变时槽，可以加一些变化隐藏等动作
 
+}
+
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key())
+    {
+    case Qt::Key_Escape:
+        close();
+        break;
+    case Qt::Key_1:
+        widget_ext->modifyEyeSeparation(0.1);
+        break;
+    case Qt::Key_2:
+        widget_ext->modifyEyeSeparation(-0.1);
+        break;
+    default:
+        break;
+    }
+
+    event->accept();
 }
