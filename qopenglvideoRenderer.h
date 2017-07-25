@@ -18,6 +18,7 @@ public:
     void updateFrame(const QImage& img);
 	void setEyeSeparation(float v);
     void modifyEyeSeparation(float diff);
+    void changeVRMode();
 protected:
 	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
@@ -27,6 +28,7 @@ protected:
     Shader* shader;
 	QOpenGLTexture* tx;
 	float eye;
+    int mode;
 };
 
 #endif // QOPENGLVIDEOPLAYER_H

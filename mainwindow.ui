@@ -87,7 +87,14 @@
        <item>
         <widget class="QPushButton" name="pushButton_two">
          <property name="text">
-          <string>Two</string>
+          <string>VR</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_VRMode">
+         <property name="text">
+          <string>VRMode</string>
          </property>
         </widget>
        </item>
@@ -130,6 +137,7 @@
       <zorder>horizontalSlider</zorder>
       <zorder>pushButton_open</zorder>
       <zorder>pushButton_two</zorder>
+      <zorder>pushButton_VRMode</zorder>
      </widget>
     </item>
    </layout>
@@ -145,6 +153,16 @@
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionleftright">
+   <property name="text">
+    <string>leftright</string>
+   </property>
+  </action>
+  <action name="actionupdown">
+   <property name="text">
+    <string>updown</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

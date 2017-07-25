@@ -56,6 +56,7 @@ private slots:
     void slot_subWindow();      //正常屏槽
 
     void slotStateChanged(VideoThread::PlayerState mPlayState);   //播放状态改变槽
+    void changeVRMode();
 
 signals:
     void sig_fullScreen();   //全屏信号

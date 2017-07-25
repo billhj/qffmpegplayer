@@ -627,6 +627,7 @@ bool VideoThread::pause(){           //暂停
 }
 
 bool VideoThread::stop(bool isWait){    //停止
+    SDL_Delay(10);
     if (mPlayerState == Stop){
         return false;
     }
@@ -651,6 +652,7 @@ bool VideoThread::stop(bool isWait){    //停止
 
         mVideoState.audioID = 0;
     }
+    SDL_Delay(10);
     //SDL_CloseAudio();
     return true;
 }

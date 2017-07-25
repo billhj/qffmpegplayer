@@ -9,6 +9,7 @@
 #include <QKeyEvent>
 #include <iostream>
 #include <QDir>
+#include <QDebug>
 
 #define printOpenGLError() printOglError(__FILE__, __LINE__)
 
@@ -27,7 +28,8 @@ static int printOglError (const char * file, int line) {
 
 QOpenGLVideoRenderer::QOpenGLVideoRenderer(QWidget* parent) : QOpenGLWidget(parent)
 {
-	eye = 0;
+    eye = 0.37;
+    mode = 1;
 	installEventFilter(this);
 	setMouseTracking(true);
     shader = NULL;
@@ -66,7 +68,9 @@ void QOpenGLVideoRenderer::paintGL()
     shader->bind();
 	GLint location1 = shader->getUniLocation("eyeseparation");
 	glUniform1f(location1, eye);
-
+    GLint location2 = shader->getUniLocation("mode");
+    glUniform1i(location2, mode);
+    //qDebug()<<eye;
 	GLint location = shader->getUniLocation("tex");
 	if (location != -1)
 	{
@@ -119,6 +123,7 @@ void QOpenGLVideoRenderer::setEyeSeparation(float v)
 void QOpenGLVideoRenderer::modifyEyeSeparation(float diff)
 {
     eye += diff;
+    qDebug()<<eye;
 }
 
 void QOpenGLVideoRenderer::resizeGL(int w, int h)
@@ -189,3 +194,14 @@ void QOpenGLVideoRenderer::keyPressEvent(QKeyEvent *event)
 	event->accept();
 }
 
+void QOpenGLVideoRenderer::changeVRMode()
+{
+    if(mode == 0)
+    {
+       mode = 1;
+    }
+    else
+    {
+       mode = 0;
+    }
+}

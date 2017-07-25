@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),ui(new Ui::MainWind
     connect(ui->pushButton_stop,SIGNAL(clicked()),this,SLOT(slotBtnClick()));
     connect(ui->pushButton_two,SIGNAL(clicked()),this,SLOT(slotBtnClick()));
     connect(ui->horizontalSlider,SIGNAL(sliderMoved(int)),this,SLOT(slotSliderMoved(int)));
-
+    connect(ui->pushButton_VRMode,SIGNAL(clicked()),this,SLOT(changeVRMode()));
     connect(this, SIGNAL(sig_fullScreen()), this, SLOT(slot_fullScreen()));
     connect(this, SIGNAL(sig_subWindow()), this, SLOT(slot_subWindow()));
     //widget_ext->show();
@@ -98,6 +98,14 @@ void MainWindow::paintEvent(QPaintEvent *event){  //绘制
 
     painter.drawImage(QPoint(x,y),img); //画出图像
 
+}
+
+void MainWindow::changeVRMode()
+{
+    if(widget_ext != NULL)
+    {
+        widget_ext->changeVRMode();
+    }
 }
 
 void MainWindow::slotGetOneFrame(QImage img){
