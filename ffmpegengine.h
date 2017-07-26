@@ -1,5 +1,12 @@
 #ifndef FFMPEGENGINE_H
 #define FFMPEGENGINE_H
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file FFMpegEngine.h
+* @brief a ffmpegframework engine decoding the video
+* @date 1/2/2017
+*/
 #include <string>
 #include "qtaudioplayer.h"
 #include "qtvideoplayer.h"

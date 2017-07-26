@@ -1,4 +1,10 @@
-
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file QOpenGLVideoRenderer.cpp
+* @brief
+* @date 1/2/2017
+*/
 #include "qopenglvideorenderer.h"
 
 #include <windows.h>
@@ -44,6 +50,9 @@ QOpenGLVideoRenderer::~QOpenGLVideoRenderer()
         delete tx;
 }
 
+/**
+* opengl init part
+*/
 void QOpenGLVideoRenderer::initializeGL()
 {
     QString path = QDir::currentPath();
@@ -62,6 +71,9 @@ void QOpenGLVideoRenderer::initializeGL()
 	
 }
 
+/**
+* draw primary
+*/
 void QOpenGLVideoRenderer::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -107,6 +119,9 @@ void QOpenGLVideoRenderer::paintGL()
 
 }
 
+/**
+* update texture
+*/
 void QOpenGLVideoRenderer::updateFrame(const QImage& img)
 {
     tx->destroy();
@@ -115,16 +130,23 @@ void QOpenGLVideoRenderer::updateFrame(const QImage& img)
 	update();
 }
 
+/**
+* eye distance setup configuration for different person
+*/
 void QOpenGLVideoRenderer::setEyeSeparation(float v)
 {
 	eye = v;
 }
 
+/**
+* modify eye distance for different eye fusion for different person
+***/
 void QOpenGLVideoRenderer::modifyEyeSeparation(float diff)
 {
     eye += diff;
     qDebug()<<eye;
 }
+
 
 void QOpenGLVideoRenderer::resizeGL(int w, int h)
 {

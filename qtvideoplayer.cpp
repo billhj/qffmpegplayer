@@ -1,3 +1,10 @@
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file QtVideoPlayer.cpp
+* @brief
+* @date 1/2/2017
+*/
 #include "qtvideoplayer.h"
 QtVideoPlayer::QtVideoPlayer() : QWidget()
 {

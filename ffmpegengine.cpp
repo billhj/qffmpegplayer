@@ -2,6 +2,15 @@
 #include "QtAudioPlayer.h"
 #include <QDebug>
 
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file FFMpegEngine.cpp
+* @brief
+* @date 1/2/2017
+*/
+
+
 FFMpegEngine::FFMpegEngine()
 {
     pFormatCtx = NULL;

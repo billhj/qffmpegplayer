@@ -1,3 +1,11 @@
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file MainWindow.cpp
+* @brief
+* @date 1/2/2017
+*/
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMetaType>

@@ -1,6 +1,12 @@
 #ifndef QTAUDIOPLAYER_H
 #define QTAUDIOPLAYER_H
-
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file QtAudioPlayer.h
+* @brief  audio player
+* @date 1/2/2017
+*/
 #include <QAudioOutput>
 
 class QtAudioPlayer

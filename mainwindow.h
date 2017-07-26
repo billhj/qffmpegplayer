@@ -1,5 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file MainWindow.h
+* @brief  ui interface
+* @date 1/2/2017
+*/
 
 #include <QMainWindow>
 #include <QImage>

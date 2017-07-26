@@ -1,3 +1,10 @@
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file main.cpp
+* @brief
+* @date 1/2/2017
+*/
 
 #include "mainwindow.h"
 #include <QApplication>

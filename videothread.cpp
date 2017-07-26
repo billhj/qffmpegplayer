@@ -1,3 +1,11 @@
+/**
+* Copyright(C) 2009-2012
+* @author Jing HUANG   matrixvis.cn
+* @file videothread.cpp
+* @brief
+* @date 1/2/2017
+*/
+
 #include "videothread.h"
 #include <stdio.h>
 #include <QDebug>
