@@ -115,6 +115,7 @@ public:
         Pause,
         Stop
     };
+    bool circling;
 
     explicit VideoThread();
     ~VideoThread();

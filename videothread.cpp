@@ -575,6 +575,7 @@ int video_thread(void *arg){      //视频线程，解码视频
 
 VideoThread::VideoThread(){    //开始时播放状态为stop
     mPlayerState = Stop;
+    circling = false;
 }
 
 VideoThread::~VideoThread(){}
@@ -820,7 +821,8 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
                     AVPacket *packet = (AVPacket *) malloc(sizeof(AVPacket)); //分配一个packet
                     av_new_packet(packet, 10);
                     strcpy((char*)packet->data,FLUSH_DATA);
-                    packet_queue_flush(&is->audioq); //清除队列
+                    if(!circling)
+                        packet_queue_flush(&is->audioq); //清除队列
                     //清除队列时，解码器中的也要清楚，往队列中存入用来清除的包，
                     //当解码线程取到这个packet的时候，就执行清除解码器的数据
                     packet_queue_put(&is->audioq, packet);
@@ -829,14 +831,15 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
                     AVPacket *packet = (AVPacket *) malloc(sizeof(AVPacket)); //分配一个packet
                     av_new_packet(packet, 10);
                     strcpy((char*)packet->data,FLUSH_DATA);
-                    packet_queue_flush(&is->videoq);  //清除队列
+                    if(!circling)
+                        packet_queue_flush(&is->videoq);  //清除队列
                     packet_queue_put(&is->videoq, packet);  //往队列中存入用来清除的包
                     is->video_clock = 0;
                 }
+                if(circling == true) circling = false;
             }
             is->seek_req = 0;
             is->seek_time = is->seek_pos / 1000000.0;
-            //qDebug()<<is->seek_time;
             is->seek_flag_audio = 1;
             is->seek_flag_video = 1;
         }
@@ -857,11 +860,12 @@ void VideoThread::run(){             //读取视频，寻找流信息，打开�
         if (av_read_frame(pFormatCtx, packet) < 0){
             //qDebug()<<"No Packet read ";
             //is->readFinished = true;   //do not finish  even no packet
-
+            circling = true;
+            seek(0);
             if (is->quit){
                 break;    //解码线程也执行完了 可以退出了
             }
-            SDL_Delay(10);
+            SDL_Delay(100);
             continue;
         }
         if (packet->stream_index == videoStream){
