@@ -11,12 +11,12 @@ void main()
 	//left
 		if(gl_TexCoord[0].t < 0.5)
 		{
-				vec4 color = texture2D(tex, vec2(gl_TexCoord[0].s  * (1 - eyeseparation)  + eyeseparation, gl_TexCoord[0].t));
+				vec4 color = texture2D(tex, vec2(gl_TexCoord[0].s  * (1 - eyeseparation), gl_TexCoord[0].t));
 				gl_FragColor = vec4(color);
 		}else
 		{
 		//right
-				vec4 color = texture2D(tex, vec2(gl_TexCoord[0].s * (1 - eyeseparation),  gl_TexCoord[0].t));
+				vec4 color = texture2D(tex, vec2(gl_TexCoord[0].s * (1 - eyeseparation) + eyeseparation,  gl_TexCoord[0].t));
 				gl_FragColor = vec4(color);
 		}
 	}
