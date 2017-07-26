@@ -155,7 +155,7 @@ GLchar * Shader::readShaderSource(const string & shaderFilename, unsigned int & 
 GLint Shader::getUniLoc (GLuint program, const GLchar *name){
   GLint loc = glGetUniformLocation (program, name);
   if (loc == -1)
-    throw ShaderException (string ("No such uniform named") + string (name));
+    //throw ShaderException (string ("No such uniform named") + string (name));
   printOpenGLError(); 
   return loc;
 }

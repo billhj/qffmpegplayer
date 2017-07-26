@@ -28,8 +28,8 @@ static int printOglError (const char * file, int line) {
 
 QOpenGLVideoRenderer::QOpenGLVideoRenderer(QWidget* parent) : QOpenGLWidget(parent)
 {
-    eye = 0.37;
-    mode = 1;
+    eye =  0.37;
+    mode = 0;
 	installEventFilter(this);
 	setMouseTracking(true);
     shader = NULL;
@@ -199,9 +199,11 @@ void QOpenGLVideoRenderer::changeVRMode()
     if(mode == 0)
     {
        mode = 1;
+       qDebug()<<"leftright";
     }
     else
     {
        mode = 0;
+       qDebug()<<"updown";
     }
 }
